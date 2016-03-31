@@ -82,7 +82,7 @@ namespace Overkill
                 else
                     l.EndPoint = seg.StartPoint;
                 p.Closed = false;
-                Options.OverlappedCount++;
+                options.OverlappedCount++;
             }
         }
 
@@ -99,7 +99,7 @@ namespace Overkill
             }
             for (int j = 0; j <= i; j++)
                 p.AddVertexAt(p.NumberOfVertices, pt[j], 0, widths[j].X, widths[j].Y);
-            Options.OverlappedCount++;
+            options.OverlappedCount++;
         }
 
         private static void RotatePolyline(Polyline p, int i)
@@ -121,8 +121,8 @@ namespace Overkill
         protected override void ProcessTangentLine(Polyline p, LineSegment3d seg, Line l, int i)
         {
             Line3d segLine = seg.GetLine();
-            if (segLine.GetClosestPointTo(l.StartPoint).Point.DistanceTo(l.StartPoint) < Options.Tolerance &&
-                segLine.GetClosestPointTo(l.EndPoint).Point.DistanceTo(l.EndPoint) < Options.Tolerance)
+            if (segLine.GetClosestPointTo(l.StartPoint).Point.DistanceTo(l.StartPoint) < options.Tolerance &&
+                segLine.GetClosestPointTo(l.EndPoint).Point.DistanceTo(l.EndPoint) < options.Tolerance)
             {
                 if (i < p.NumberOfVertices - 1)
                 {
@@ -131,7 +131,7 @@ namespace Overkill
                 else
                 {
                     p.Closed = false;
-                    Options.OverlappedCount++;
+                    options.OverlappedCount++;
                 }
             }
         }

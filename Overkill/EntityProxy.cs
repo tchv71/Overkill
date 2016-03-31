@@ -11,13 +11,13 @@ namespace Overkill
     public class EntityProxy : IEntityProxy
     {
         protected readonly Entity Ent;
-        protected readonly Overkill.Options Options;
+        protected readonly Overkill.Options options;
         protected readonly RTree<DbEntity> Tree; 
 
         public EntityProxy(Entity ent, Overkill.Options opts, RTree<DbEntity> tree)
         {
             Ent = ent;
-            Options = opts;
+            options = opts;
             Tree = tree;
         }
 
@@ -27,9 +27,9 @@ namespace Overkill
             ent.Ptr.Erase();
             Tree.Delete(Util.GetRect(ent.Ptr as Entity), ent);
             if (bDuplicate)
-                Options.DupCount++;
+                options.DupCount++;
             else
-                Options.OverlappedCount++;
+                options.OverlappedCount++;
         }
 
         public virtual void Process()
@@ -44,7 +44,7 @@ namespace Overkill
                 {
                     Entity ent2 = ent.Ptr as Entity;
 
-                    if (Util.IsEqual(ent1, ent2))
+                    if (Util.IsEqual(ent1, ent2, options))
                     {
                         DelEntity(ent);
                     }

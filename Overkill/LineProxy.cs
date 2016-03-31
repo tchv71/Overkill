@@ -23,17 +23,17 @@ namespace Overkill
                 {
                     ObjectIdCollection list2 = l2.GetPersistentReactorIds();
                     // Если с линией что-то ассоциировано, не удалять ее
-                    if (list2.Count != 0 && Options.bMaintainAssociativities)
+                    if (list2.Count != 0 && options.bMaintainAssociativities)
                         continue;
 
-                    if (Util.IsEqual(l1, l2, Options.Tolerance))
+                    if (Util.IsEqual(l1, l2, options.Tolerance))
                     {
                         DelEntity(ent);
                         continue;
                     }
-                    if (Util.AreLinesParrallelAndItersects(l1, l2, Options.Tolerance))
+                    if (Util.AreLinesParrallelAndItersects(l1, l2, options.Tolerance))
                     {
-                        if (Util.IsPointLiesOnLine(l1, l2.StartPoint, Options.Tolerance) && Util.IsPointLiesOnLine(l1, l2.EndPoint, Options.Tolerance))
+                        if (Util.IsPointLiesOnLine(l1, l2.StartPoint, options.Tolerance) && Util.IsPointLiesOnLine(l1, l2.EndPoint, options.Tolerance))
                         {
                             DelEntity(ent, false);
                             continue;

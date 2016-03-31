@@ -19,7 +19,7 @@ namespace Overkill
         }
             
         // Проверка двух примитивов на идентичность
-        public static bool IsEqual(Entity ent1, Entity ent2)
+        public static bool IsEqual(Entity ent1, Entity ent2, Overkill.Options options)
         {
             ResultBuffer rb1 = AcadLib.ObjectARX._acdbEntGet(new UIntPtr((ulong)ent1.Id.OldIdPtr.ToInt64()));
             ResultBuffer rb2 = AcadLib.ObjectARX._acdbEntGet(new UIntPtr((ulong)ent2.Id.OldIdPtr.ToInt64()));
@@ -56,15 +56,22 @@ namespace Overkill
                         }
                     }
                 }
-                if (arr1.Length != arr2.Length)
-                    return false;
+                //if (arr1.Length != arr2.Length)
+                //    return false;
             }
-            for (int i = 1; i < arr1.Length; i++)
+            for (int index1 = 1, index2=1; index1 < arr1.Length && index2<arr2.Length; index1++, index2++)
             {
-                TypedValue v1 = arr1[i];
-                TypedValue v2 = arr2[i];
-                if (v1.TypeCode == (short)DxfCode.Handle || v1.TypeCode ==(short)DxfCode.AttributeTag || v1.TypeCode == (short)DxfCode.SoftPointerId)
+                TypedValue v1 = arr1[index1];
+                TypedValue v2 = arr2[index2];
+                if (v1.TypeCode == (short)DxfCode.Handle ||
+                    v1.TypeCode ==(short)DxfCode.AttributeTag ||
+                    v1.TypeCode == (short)DxfCode.SoftPointerId)
                     continue;
+                bool bSkip = false;
+                if (options.IgnoreColor && v1.TypeCode == (short) DxfCode.Color)
+                    v1=arr1[++index1];
+                if (options.IgnoreColor && v2.TypeCode == (short) DxfCode.Color)
+                    v2=arr2[++index2];
                 String str1 = v1.ToString();
                 String str2 = v2.ToString();
                 if (str1 != str2)

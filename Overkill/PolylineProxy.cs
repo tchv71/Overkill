@@ -28,7 +28,7 @@ namespace Overkill
                         var ptr = ent.Ptr as Polyline;
                         if (ptr != null)
                         {
-                            if (Util.IsEqual(p, ptr))
+                            if (Util.IsEqual(p, ptr, options))
                             {
                                 DelEntity(ent);
                                 continue;
@@ -38,11 +38,11 @@ namespace Overkill
                         else if (ent.Ptr is Line)
                         {
                             Line l = (Line)ent.Ptr;
-                            if (!seg.Direction.IsParallelTo(l.Delta, new Tolerance(Options.Tolerance, Options.Tolerance)))
+                            if (!seg.Direction.IsParallelTo(l.Delta, new Tolerance(options.Tolerance, options.Tolerance)))
                                 continue;
-                            if (Util.IsPointLiesOnLine(seg, l.StartPoint, Options.Tolerance))
+                            if (Util.IsPointLiesOnLine(seg, l.StartPoint, options.Tolerance))
                             {
-                                if (Util.IsPointLiesOnLine(seg, l.EndPoint, Options.Tolerance))
+                                if (Util.IsPointLiesOnLine(seg, l.EndPoint, options.Tolerance))
                                 {
                                     // case b1.6
                                     DelEntity(ent, false);
@@ -50,7 +50,7 @@ namespace Overkill
                                 }
                                 ProcessPolylineAndLine(p, seg, l, true, i, ent);
                             }
-                            else if (Util.IsPointLiesOnLine(seg, l.EndPoint, Options.Tolerance))
+                            else if (Util.IsPointLiesOnLine(seg, l.EndPoint, options.Tolerance))
                             {
                                 ProcessPolylineAndLine(p, seg, l, false, i, ent);
                             }
@@ -68,8 +68,8 @@ namespace Overkill
         protected virtual void ProcessTangentLine(Polyline p, LineSegment3d seg, Line l, int i)
         {
             Line3d segLine = seg.GetLine();
-            if (segLine.GetClosestPointTo(l.StartPoint).Point.DistanceTo(l.StartPoint) < Options.Tolerance &&
-                segLine.GetClosestPointTo(l.EndPoint).Point.DistanceTo(l.EndPoint) <Options.Tolerance)
+            if (segLine.GetClosestPointTo(l.StartPoint).Point.DistanceTo(l.StartPoint) < options.Tolerance &&
+                segLine.GetClosestPointTo(l.EndPoint).Point.DistanceTo(l.EndPoint) <options.Tolerance)
             {
                 // cases b1.7-1.9
                 if (i == 0)
@@ -103,7 +103,7 @@ namespace Overkill
                 {
                     // case b1.1
                     p.RemoveVertexAt(i);
-                    Options.OverlappedCount++;
+                    options.OverlappedCount++;
                 }
                 else
                 {
@@ -119,7 +119,7 @@ namespace Overkill
                 else
                     l.EndPoint = seg.StartPoint;
                 p.RemoveVertexAt(i + 1);
-                Options.OverlappedCount++;
+                options.OverlappedCount++;
             }
             else
             {
@@ -143,7 +143,7 @@ namespace Overkill
             AddToDatabase(p.Database.BlockTableId, pnew);
             for (int j = i + 1; j < p.NumberOfVertices;)
                 p.RemoveVertexAt(p.NumberOfVertices - 1);
-            Options.OverlappedCount++;
+            options.OverlappedCount++;
         }
 
         // Разбить полилинию на 2, не удаляя сегмент (разрезать по вершине i+1) и продлить конец первой полилинии до указанной точки
@@ -157,16 +157,16 @@ namespace Overkill
             for (int j = i + 2; j < p.NumberOfVertices;)
                 p.RemoveVertexAt(p.NumberOfVertices - 1);
             p.Extend(false, pt);
-            Options.OverlappedCount++;
+            options.OverlappedCount++;
         }
 
         protected void AddToDatabase(ObjectId blockTableId, Polyline pnew)
         {
-            BlockTable acBlkTbl = Options.Tr.GetObject(blockTableId, OpenMode.ForRead) as BlockTable;
-            BlockTableRecord ms = Options.Tr.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+            BlockTable acBlkTbl = options.Tr.GetObject(blockTableId, OpenMode.ForRead) as BlockTable;
+            BlockTableRecord ms = options.Tr.GetObject(acBlkTbl[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
             Debug.Assert(ms != null, "ms != null");
             ms.AppendEntity(pnew);
-            Options.Tr.AddNewlyCreatedDBObject(pnew, true);
+            options.Tr.AddNewlyCreatedDBObject(pnew, true);
         }
     }
 }

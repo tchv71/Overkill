@@ -22,7 +22,7 @@ namespace Overkill
                 cbIgnorePolylineWidths.Checked = _options.bIgnorePolylineWidths;
                 cbMaintainAssoc.Checked = _options.bMaintainAssociativities;
                 cbDontBreakPolylines.Checked = _options.bMaintainPolylines;
-                cbDontBreakPolylines.Checked = _options.bOptimizePolylines;
+                cbOptimizePolylines.Checked = _options.bOptimizePolylines;
                 tbTolerance.Text = _options.StrTolerance;
                 cbColor.Checked = _options.IgnoreColor;
                 cbLayer.Checked = _options.IgnoreLayer;

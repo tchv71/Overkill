@@ -25,7 +25,14 @@ namespace Overkill
         protected void DelEntity(DbEntity ent, bool bDuplicate = true)
         {
             ent.Ptr.Erase();
-            Tree.Delete(Util.GetRect(ent.Ptr as Entity), ent);
+            try
+            {
+                Tree.Delete(Util.GetRect(ent.Ptr as Entity), ent);
+            }
+            catch (System.Exception)
+            {
+                // ignored
+            }
             if (bDuplicate)
                 options.DupCount++;
             else
@@ -43,10 +50,10 @@ namespace Overkill
                 if (ent1.GetType() == ent.Ptr.GetType())
                 {
                     Entity ent2 = ent.Ptr as Entity;
-
-                    if (Util.IsEqual(ent1, ent2, options))
+                    bool bDelFirst;
+                    if (Util.IsEqual(ent1, ent2, options, out bDelFirst))
                     {
-                        DelEntity(ent);
+                        DelEntity(bDelFirst ? new DbEntity(ent1) : ent);
                     }
                 }
             }

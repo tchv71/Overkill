@@ -28,9 +28,10 @@ namespace Overkill
                         var ptr = ent.Ptr as Polyline;
                         if (ptr != null)
                         {
-                            if (Util.IsEqual(p, ptr, options))
+                            bool bDelFirst;
+                            if (Util.IsEqual(p, ptr, options, out bDelFirst))
                             {
-                                DelEntity(ent);
+                                DelEntity(bDelFirst? new DbEntity(p) : ent );
                                 continue;
                             }
                             //p.JoinEntity(ptr);

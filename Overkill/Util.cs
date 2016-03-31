@@ -19,19 +19,22 @@ namespace Overkill
         }
             
         // Проверка двух примитивов на идентичность
-        public static bool IsEqual(Entity ent1, Entity ent2, Overkill.Options options)
+        public static bool IsEqual(Entity ent1, Entity ent2, Overkill.Options options, out bool bDelFirst)
         {
             ResultBuffer rb1 = AcadLib.ObjectARX._acdbEntGet(new UIntPtr((ulong)ent1.Id.OldIdPtr.ToInt64()));
             ResultBuffer rb2 = AcadLib.ObjectARX._acdbEntGet(new UIntPtr((ulong)ent2.Id.OldIdPtr.ToInt64()));
             TypedValue[] arr1 = rb1.AsArray();
             TypedValue[] arr2 = rb2.AsArray();
+            bDelFirst = false;
             if (arr1.Length != arr2.Length)
             {
+                bDelFirst = true;
                 if (arr1.Length > arr2.Length)
                 {
                     TypedValue[] tmp = arr1;
                     arr2 = arr1;
                     arr1 = tmp;
+                    bDelFirst = false;
                 }
                 for (int i = 0; i < arr2.Length; i++)
                 {
@@ -67,17 +70,37 @@ namespace Overkill
                     v1.TypeCode ==(short)DxfCode.AttributeTag ||
                     v1.TypeCode == (short)DxfCode.SoftPointerId)
                     continue;
-                bool bSkip = false;
-                if (options.IgnoreColor && v1.TypeCode == (short) DxfCode.Color)
-                    v1=arr1[++index1];
-                if (options.IgnoreColor && v2.TypeCode == (short) DxfCode.Color)
-                    v2=arr2[++index2];
+                CheckOption(options.IgnoreColor, ref v1, arr1, ref index1, DxfCode.Color);
+                CheckOption(options.IgnoreColor, ref v2, arr2, ref index2, DxfCode.Color);
+                CheckOption(options.IgnoreLayer, ref v1, arr1, ref index1, DxfCode.LayerName);
+                CheckOption(options.IgnoreLayer, ref v2, arr2, ref index2, DxfCode.LayerName);
+                CheckOption(options.IgnoreLinetype, ref v1, arr1, ref index1, DxfCode.LinetypeName);
+                CheckOption(options.IgnoreLinetype, ref v2, arr2, ref index2, DxfCode.LinetypeName);
+                CheckOption(options.IgnoreLinetypeScale, ref v1, arr1, ref index1, DxfCode.LinetypeScale);
+                CheckOption(options.IgnoreLinetypeScale, ref v2, arr2, ref index2, DxfCode.LinetypeScale);
+                CheckOption(options.IgnoreLineweight, ref v1, arr1, ref index1, DxfCode.LineWeight);
+                CheckOption(options.IgnoreLineweight, ref v2, arr2, ref index2, DxfCode.LineWeight);
+                //CheckOption(options.IgnoreMaterial, ref v1, arr1, ref index1, DxfCode.);
+                //CheckOption(options.IgnoreLineweight, ref v2, arr2, ref index2, DxfCode.LineWeight);
+                CheckOption(options.IgnorePlotStyle, ref v1, arr1, ref index1, DxfCode.PlotStyleNameId);
+                CheckOption(options.IgnorePlotStyle, ref v2, arr2, ref index2, DxfCode.PlotStyleNameId);
+                CheckOption(options.IgnoreThickness, ref v1, arr1, ref index1, DxfCode.Thickness);
+                CheckOption(options.IgnoreThickness, ref v2, arr2, ref index2, DxfCode.Thickness);
+                //CheckOption(options.IgnoreTransparency, ref v1, arr1, ref index1, DxfCode.);
+                //CheckOption(options.IgnoreTransparency, ref v2, arr2, ref index2, DxfCode.Thickness);
+
                 String str1 = v1.ToString();
                 String str2 = v2.ToString();
                 if (str1 != str2)
                     return false;
             }
             return true;
+        }
+
+        private static void CheckOption(bool option, ref TypedValue v, TypedValue[] arr, ref int index, DxfCode dxfCode)
+        {
+            if (option && v.TypeCode == (short) dxfCode)
+                v = arr[++index];
         }
 
         // Проверка двух линий на идентичность

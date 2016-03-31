@@ -26,9 +26,10 @@ namespace Overkill
                     if (list2.Count != 0 && options.bMaintainAssociativities)
                         continue;
 
-                    if (Util.IsEqual(l1, l2, options.Tolerance))
+                    bool bDelFirst;
+                    if (Util.IsEqual(l1, l2, options, out bDelFirst))
                     {
-                        DelEntity(ent);
+                        DelEntity(bDelFirst? new DbEntity(l1):ent);
                         continue;
                     }
                     if (Util.AreLinesParrallelAndItersects(l1, l2, options.Tolerance))

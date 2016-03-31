@@ -12,7 +12,6 @@ namespace AcadLib {
 
 	public ref class ObjectARX
 	{
-		// TODO: здесь следует добавить свои методы для этого класса.
 	public:
 
 		static AutoCAD::DatabaseServices::ResultBuffer^ _acdbEntGet(UIntPtr name)

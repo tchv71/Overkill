@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
+﻿using System;
+using Autodesk.AutoCAD.DatabaseServices;
 using RTree;
 
 namespace Overkill
@@ -57,6 +58,24 @@ namespace Overkill
                     }
                 }
             }
+        }
+
+        protected bool CheckUnequal(Entity ent1, Entity ent2)
+        {
+            bool bResult = (!options.IgnoreLayer && ent1.Layer != ent2.Layer) ||
+                    (!options.IgnoreLinetype && ent1.Linetype != ent2.Linetype) ||
+                    (!options.IgnoreLinetypeScale &&
+                     Math.Abs(ent1.LinetypeScale - ent2.LinetypeScale) > options.Tolerance) ||
+                    (!options.IgnoreMaterial && ent1.Material != ent2.Material) ||
+                    (!options.IgnorePlotStyle && ent1.PlotStyleNameId != ent2.PlotStyleNameId) ||
+                    (!options.IgnoreColor && ent1.Color != ent2.Color) ||
+                    (!options.IgnoreTransparency && ent1.Transparency != ent2.Transparency) ||
+                    (!options.IgnoreLineweight && ent1.LineWeight != ent2.LineWeight);
+            Polyline p1 = ent1 as Polyline;
+            Line l1 = ent2 as Line;
+            if (p1 != null && l1 != null)
+                bResult = bResult || (!options.IgnoreThickness && Math.Abs(p1.Thickness - l1.Thickness) > options.Tolerance);
+            return bResult;
         }
 
     }

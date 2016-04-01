@@ -1,4 +1,5 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
+﻿using System;
+using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
 using RTree;
 using System.Diagnostics;
@@ -39,7 +40,8 @@ namespace Overkill
                         else if (ent.Ptr is Line)
                         {
                             Line l = (Line)ent.Ptr;
-                            if (!seg.Direction.IsParallelTo(l.Delta, new Tolerance(options.Tolerance, options.Tolerance)))
+                            if (!seg.Direction.IsParallelTo(l.Delta, new Tolerance(options.Tolerance, options.Tolerance)) ||
+                                CheckUnequal(p, l))
                                 continue;
                             if (Util.IsPointLiesOnLine(seg, l.StartPoint, options.Tolerance))
                             {
@@ -49,14 +51,20 @@ namespace Overkill
                                     DelEntity(ent, false);
                                     continue;
                                 }
+                                if (options.bMaintainPolylines)
+                                    continue;
                                 ProcessPolylineAndLine(p, seg, l, true, i, ent);
                             }
                             else if (Util.IsPointLiesOnLine(seg, l.EndPoint, options.Tolerance))
                             {
+                                if (options.bMaintainPolylines)
+                                    continue;
                                 ProcessPolylineAndLine(p, seg, l, false, i, ent);
                             }
                             else
                             {
+                                if (options.bMaintainPolylines)
+                                    continue;
                                 ProcessTangentLine(p, seg, l, i);
                             }
                         }
@@ -64,6 +72,7 @@ namespace Overkill
                 }
             }
         }
+
 
         // Изменить полилинию и линию, которая является касательной к ней
         protected virtual void ProcessTangentLine(Polyline p, LineSegment3d seg, Line l, int i)

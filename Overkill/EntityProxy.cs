@@ -72,9 +72,13 @@ namespace Overkill
                     (!options.IgnoreTransparency && ent1.Transparency != ent2.Transparency) ||
                     (!options.IgnoreLineweight && ent1.LineWeight != ent2.LineWeight);
             Polyline p1 = ent1 as Polyline;
-            Line l1 = ent2 as Line;
-            if (p1 != null && l1 != null)
-                bResult = bResult || (!options.IgnoreThickness && Math.Abs(p1.Thickness - l1.Thickness) > options.Tolerance);
+            Line l2 = ent2 as Line;
+            if (p1 != null && l2 != null)
+                bResult = bResult || (!options.IgnoreThickness && Math.Abs(p1.Thickness - l2.Thickness) > options.Tolerance);
+            Line l1 = ent1 as Line;
+            if (l1 != null && l2 != null)
+                bResult = bResult || (!options.IgnoreThickness && Math.Abs(l1.Thickness - l2.Thickness) > options.Tolerance);
+
             return bResult;
         }
 

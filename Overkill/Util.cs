@@ -81,19 +81,22 @@ namespace Overkill
                 CheckOption(options.IgnoreLineweight, ref v1, arr1, ref index1, DxfCode.LineWeight);
                 CheckOption(options.IgnoreLineweight, ref v2, arr2, ref index2, DxfCode.LineWeight);
                 //CheckOption(options.IgnoreMaterial, ref v1, arr1, ref index1, DxfCode.);
-                //CheckOption(options.IgnoreLineweight, ref v2, arr2, ref index2, DxfCode.LineWeight);
+                //CheckOption(options.IgnoreMaterial, ref v2, arr2, ref index2, DxfCode.);
                 CheckOption(options.IgnorePlotStyle, ref v1, arr1, ref index1, DxfCode.PlotStyleNameId);
                 CheckOption(options.IgnorePlotStyle, ref v2, arr2, ref index2, DxfCode.PlotStyleNameId);
                 CheckOption(options.IgnoreThickness, ref v1, arr1, ref index1, DxfCode.Thickness);
                 CheckOption(options.IgnoreThickness, ref v2, arr2, ref index2, DxfCode.Thickness);
                 //CheckOption(options.IgnoreTransparency, ref v1, arr1, ref index1, DxfCode.);
-                //CheckOption(options.IgnoreTransparency, ref v2, arr2, ref index2, DxfCode.Thickness);
+                //CheckOption(options.IgnoreTransparency, ref v2, arr2, ref index2, DxfCode.);
 
                 String str1 = v1.ToString();
                 String str2 = v2.ToString();
                 if (str1 != str2)
                     return false;
             }
+            if ((!options.IgnoreMaterial && ent1.Material != ent2.Material) ||
+                (!options.IgnoreTransparency && ent1.Transparency != ent2.Transparency))
+                return false;
             return true;
         }
 

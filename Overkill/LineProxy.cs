@@ -32,6 +32,8 @@ namespace Overkill
                         DelEntity(bDelFirst? new DbEntity(l1):ent);
                         continue;
                     }
+                    if (CheckUnequal(l1, l2))
+                        continue;
                     if (Util.AreLinesParrallelAndItersects(l1, l2, options.Tolerance))
                     {
                         if (Util.IsPointLiesOnLine(l1, l2.StartPoint, options.Tolerance) && Util.IsPointLiesOnLine(l1, l2.EndPoint, options.Tolerance))
@@ -43,6 +45,7 @@ namespace Overkill
                         {
                             Debug.Assert(l1 != null, "l1 != null");
                             l1.JoinEntity(l2);
+                            options.OverlappedCount++;
                         }
                         catch (Autodesk.AutoCAD.Runtime.Exception)
                         {

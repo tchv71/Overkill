@@ -13,40 +13,37 @@ namespace Overkill
         protected override void ProcessPolylineAndLine(Polyline p, LineSegment3d seg, Line l, bool bModifyStart, int i,
             DbEntity ent)
         {
-            if (seg.GetParameterOf(bModifyStart ? l.EndPoint : l.StartPoint) < 0)
+            Point3d pt = bModifyStart ? l.EndPoint : l.StartPoint;
+            bool b1 = seg.GetParameterOf(pt) < 0;
+            bool b2 = seg.Direction.Y > -seg.Direction.X;
+            if ((b1 && b2) || (!b1 && !b2))
             {
                 if (bModifyStart)
-                    l.StartPoint = seg.EndPoint;
+                    l.StartPoint = !b1? seg.StartPoint:seg.EndPoint;
                 else
-                    l.EndPoint = seg.EndPoint;
-                if (i < p.NumberOfVertices - 2)
+                    l.EndPoint = !b1 ? seg.StartPoint : seg.EndPoint;
+                if (i <= p.NumberOfVertices - 2)
                 {
-                    // case b2.1 and b2.3
+                    // case b2.1, b2.3, b2.5
                     RemoveSegmentAt(p, i);
                 }
-                else if (i == p.NumberOfVertices - 2)
-                {
-                    // case b2.5
-                    RotatePolyline(p, i - 1);
-                    p.Extend(true, bModifyStart ? l.EndPoint : l.StartPoint);
-                    DelEntity(ent, false);
-                }
                 else
                 {
-                    // case 2.8
-                    Polyline pnew = (Polyline) p.Clone();
-                    int nVert = p.NumberOfVertices - 1;
-                    for (int j = 1; j < nVert; j++)
-                        pnew.RemoveVertexAt(1);
-                    pnew.Closed = false;
-                    pnew.Extend(false, bModifyStart ? l.EndPoint : l.StartPoint);
-                    AddToDatabase(p.Database.BlockTableId, pnew);
+                    // case b2.7
                     p.Closed = false;
-                    DelEntity(ent, false);
+                    options.OverlappedCount++;
                 }
             }
             else if (i == 0)
             {
+                if (b1)
+                {
+                    p.AddVertexAt(p.NumberOfVertices, p.GetPoint2dAt(0), 0, p.GetEndWidthAt(p.NumberOfVertices-1), p.GetEndWidthAt(p.NumberOfVertices) );
+                    p.Closed = false;
+                    p.Extend(true,pt);
+                    DelEntity(ent, false);
+                    return;
+                }
                 // case b2.2
                 Polyline pnew = (Polyline) p.Clone();
                 pnew.Closed = false;
@@ -54,35 +51,38 @@ namespace Overkill
                 {
                     pnew.RemoveVertexAt(pnew.NumberOfVertices - 1);
                 }
-                pnew.Extend(false, bModifyStart ? l.EndPoint : l.StartPoint);
+                pnew.Extend(false, pt);
                 AddToDatabase(p.Database.BlockTableId, pnew);
                 RemoveSegmentAt(p, i);
             }
-            else if (i < p.NumberOfVertices - 2)
+            else if (i <= p.NumberOfVertices - 2)
             {
-                // case b2.4
-                RotatePolyline(p, i);
-                p.Extend(false, bModifyStart ? l.EndPoint : l.StartPoint);
+               
+                // case b2.4, b2.6
+                RotatePolyline(p, b1? i-1:i);
+                p.Extend(b1, pt);
                 DelEntity(ent, false);
-            }
-            else if (i == p.NumberOfVertices - 2)
-            {
-                // case 2.6
-                if (bModifyStart)
-                    l.StartPoint = seg.StartPoint;
-                else
-                    l.EndPoint = seg.StartPoint;
-                RemoveSegmentAt(p, i);
             }
             else
             {
-                // case b2.7
-                if (bModifyStart)
-                    l.StartPoint = seg.StartPoint;
-                else
-                    l.EndPoint = seg.StartPoint;
+                if (!b1)
+                {
+                    p.AddVertexAt(p.NumberOfVertices, p.GetPoint2dAt(0), 0, p.GetEndWidthAt(p.NumberOfVertices - 1), p.GetEndWidthAt(p.NumberOfVertices));
+                    p.Closed = false;
+                    p.Extend(false, pt);
+                    DelEntity(ent, false);
+                    return;
+                }
+                // case 2.8
+                Polyline pnew = (Polyline)p.Clone();
+                int nVert = p.NumberOfVertices - 1;
+                for (int j = 1; j < nVert; j++)
+                    pnew.RemoveVertexAt(1);
+                pnew.Closed = false;
+                pnew.Extend(false, bModifyStart ? l.EndPoint : l.StartPoint);
+                AddToDatabase(p.Database.BlockTableId, pnew);
                 p.Closed = false;
-                options.OverlappedCount++;
+                DelEntity(ent, false);
             }
         }
 

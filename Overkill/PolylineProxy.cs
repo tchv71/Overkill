@@ -19,6 +19,8 @@ namespace Overkill
             for (int i = 0; i < (p.Closed ? p.NumberOfVertices : p.NumberOfVertices - 1); i++)
             {
                 LineSegment3d seg = p.GetLineSegmentAt(i);
+                if (p.GetSegmentType(i) != SegmentType.Line)
+                    continue;
                 if (seg != null)
                 {
                     var list = Tree.Intersects(Util.GetRect(seg));
@@ -103,38 +105,59 @@ namespace Overkill
  
         protected virtual void ProcessPolylineAndLine(Polyline p, LineSegment3d seg, Line l, bool bModifyStart, int i, DbEntity ent)
         {
-            if (seg.GetParameterOf(bModifyStart ? l.EndPoint : l.StartPoint) < 0)
+            Point3d pt = bModifyStart ? l.EndPoint : l.StartPoint;
+            bool b1 = seg.GetParameterOf(pt) < 0;
+            bool b2 = seg.Direction.Y>-seg.Direction.X;
+            if ((b1&&b2) || (!b1&&!b2))
             {
                 if (bModifyStart)
-                    l.StartPoint = seg.EndPoint;
+                    l.StartPoint = !b1?seg.StartPoint:seg.EndPoint;
                 else
-                    l.EndPoint = seg.EndPoint;
+                    l.EndPoint = !b1 ? seg.StartPoint : seg.EndPoint;
                 if (i == 0)
                 {
                     // case b1.1
                     p.RemoveVertexAt(i);
                     options.OverlappedCount++;
                 }
-                else
+                else if (i != p.NumberOfVertices - 2)
                 {
-                    // case b1.2, b1.5
+                    // case b1.3
                     BreakPolyline(p, i, l.EndPoint);
                 }
+                else
+                {
+                    // case b1.5
+                    p.RemoveVertexAt(i+1);
+                    options.OverlappedCount++;
+                }
+            }
+            else if (i == 0)
+            {
+                if (b1)
+                    p.Extend(true, pt);
+                else
+                    BreakPolyline2(p, i, pt, false);
+                DelEntity(ent);
+                options.OverlappedCount++;
+
             }
             else if (i == p.NumberOfVertices - 2)
             {
-                // case b1.4
-                if (bModifyStart)
-                    l.StartPoint = seg.StartPoint;
+                // case b1.2, 1.6
+                if (!b1)
+                    p.Extend(i==0,pt);
                 else
-                    l.EndPoint = seg.StartPoint;
-                p.RemoveVertexAt(i + 1);
+                    BreakPolyline2(p, i, pt, true);
+
+                DelEntity(ent);
                 options.OverlappedCount++;
+                return;
             }
             else
             {
-                // case b1.3
-                BreakPolyline2(p, i, l.EndPoint);
+                // case 1.4
+                BreakPolyline2(p, i, pt, b1);
                 DelEntity(ent, false);
             }
         }
@@ -157,16 +180,22 @@ namespace Overkill
         }
 
         // Разбить полилинию на 2, не удаляя сегмент (разрезать по вершине i+1) и продлить конец первой полилинии до указанной точки
-        private void BreakPolyline2(Polyline p, int i, Point3d pt)
+        private void BreakPolyline2(Polyline p, int i, Point3d pt, bool bExtendStart)
         {
-            Polyline pnew = (Polyline)p.Clone();
-            for (int j = 0; j < i + 1; j++)
-                pnew.RemoveVertexAt(0);
-            ObjectId blockTableId = p.Database.BlockTableId;
-            AddToDatabase(blockTableId, pnew);
-            for (int j = i + 2; j < p.NumberOfVertices;)
-                p.RemoveVertexAt(p.NumberOfVertices - 1);
-            p.Extend(false, pt);
+            if (p.NumberOfVertices > 2)
+            {
+                Polyline pnew = (Polyline) p.Clone();
+                for (int j = 0; j < (bExtendStart? i : i + 1); j++)
+                    pnew.RemoveVertexAt(0);
+                ObjectId blockTableId = p.Database.BlockTableId;
+                if (bExtendStart)
+                    pnew.Extend(true, pt);
+                AddToDatabase(blockTableId, pnew);
+                for (int j = (bExtendStart? i+1 : i + 2); j < p.NumberOfVertices;)
+                    p.RemoveVertexAt(p.NumberOfVertices - 1);
+            }
+            if (!bExtendStart)
+                p.Extend(false, pt);
             options.OverlappedCount++;
         }
 

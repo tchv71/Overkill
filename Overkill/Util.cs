@@ -10,10 +10,10 @@ namespace Overkill
         public static IEntityProxy MakeProxy(Entity ent, Overkill.Options opts, RTree<DbEntity> tree)
         {
             if (ent is Line)
-                return new LineProxy(ent as Line, opts, tree);
+                return new LineProxy((Line) ent, opts, tree);
             if (ent is Polyline)
                 return (ent as Polyline).Closed ?
-                    (IEntityProxy)new ClosedPolylineProxy((Polyline) ent, opts, tree) : 
+                    new ClosedPolylineProxy((Polyline) ent, opts, tree) : 
                     new PolylineProxy((Polyline) ent, opts, tree);
             return new EntityProxy(ent, opts, tree);
         }

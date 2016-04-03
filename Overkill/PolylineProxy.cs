@@ -26,6 +26,8 @@ namespace Overkill
                     var list = Tree.Intersects(Util.GetRect(seg));
                     foreach (var ent in list)
                     {
+                        if  (i>= (p.Closed ? p.NumberOfVertices : p.NumberOfVertices - 1))
+                            continue;
                         seg = p.GetLineSegmentAt(i);
                         if (p.GetSegmentType(i) != SegmentType.Line)
                             continue;

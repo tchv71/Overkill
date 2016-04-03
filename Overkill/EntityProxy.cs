@@ -1,5 +1,6 @@
 ﻿using System;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 using RTree;
 
 namespace Overkill
@@ -38,6 +39,31 @@ namespace Overkill
                 options.DupCount++;
             else
                 options.OverlappedCount++;
+        }
+        private static Rectangle GetRect(Point3d p1, Point3d p2)
+        {
+            return new Rectangle((float)p1.X, (float)p1.Y, (float)p2.X,
+                (float)p2.Y, (float)p1.Z, (float)p2.Z);
+        }
+
+        public static Rectangle GetRect(Line l1)
+        {
+            return GetRect(l1.StartPoint, l1.EndPoint);
+        }
+
+        public static Rectangle GetRect(LineSegment3d l1)
+        {
+            return GetRect(l1.StartPoint, l1.EndPoint);
+        }
+
+        public static Rectangle GetRect(Extents3d ext)
+        {
+            return GetRect(ext.MinPoint, ext.MaxPoint);
+        }
+
+        public static Rectangle GetRect(Entity ent)
+        {
+            return GetRect(ent.GeometricExtents);
         }
 
         public virtual void Process()

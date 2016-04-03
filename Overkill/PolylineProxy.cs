@@ -26,6 +26,9 @@ namespace Overkill
                     var list = Tree.Intersects(Util.GetRect(seg));
                     foreach (var ent in list)
                     {
+                        seg = p.GetLineSegmentAt(i);
+                        if (p.GetSegmentType(i) != SegmentType.Line)
+                            continue;
                         if (ent.Ptr == p || ent.Ptr.IsErased)
                             continue;
                         var ptr = ent.Ptr as Polyline;
@@ -55,19 +58,27 @@ namespace Overkill
                                 }
                                 if (options.bMaintainPolylines)
                                     continue;
-                                ProcessPolylineAndLine(p, seg, l, true, i, ent);
+                                Point3d pt = l.StartPoint;
+                                if (pt.DistanceTo(seg.StartPoint)<options.Tolerance || pt.DistanceTo(seg.EndPoint)<options.Tolerance)
+                                    ProcessTangentLine(p,seg,l, true,i, ent);
+                                else
+                                    ProcessPolylineAndLine(p, seg, l, true, i, ent);
                             }
                             else if (Util.IsPointLiesOnLine(seg, l.EndPoint, options.Tolerance))
                             {
                                 if (options.bMaintainPolylines)
                                     continue;
-                                ProcessPolylineAndLine(p, seg, l, false, i, ent);
+                                Point3d pt = l.EndPoint;
+                                if (pt.DistanceTo(seg.StartPoint) < options.Tolerance || pt.DistanceTo(seg.EndPoint) < options.Tolerance)
+                                    ProcessTangentLine(p, seg, l, false, i, ent);
+                                else
+                                    ProcessPolylineAndLine(p, seg, l, false, i, ent);
                             }
                             else
                             {
                                 if (options.bMaintainPolylines)
                                     continue;
-                                ProcessTangentLine(p, seg, l, i);
+                                ProcessTangentLine(p, seg, l, true, i, ent);
                             }
                         }
                     }
@@ -77,12 +88,13 @@ namespace Overkill
 
 
         // Изменить полилинию и линию, которая является касательной к ней
-        protected virtual void ProcessTangentLine(Polyline p, LineSegment3d seg, Line l, int i)
+        protected virtual void ProcessTangentLine(Polyline p, LineSegment3d seg, Line l, bool bModifyFirst, int i, DbEntity ent)
         {
             Line3d segLine = seg.GetLine();
             if (segLine.GetClosestPointTo(l.StartPoint).Point.DistanceTo(l.StartPoint) < options.Tolerance &&
                 segLine.GetClosestPointTo(l.EndPoint).Point.DistanceTo(l.EndPoint) <options.Tolerance)
             {
+                if (IsAdjacent(p, seg, l, bModifyFirst, i, ent)) return;
                 // cases b1.7-1.9
                 if (i == 0)
                 {
@@ -102,7 +114,19 @@ namespace Overkill
             }
         }
 
- 
+        protected bool IsAdjacent(Polyline p, LineSegment3d seg, Line l, bool bModifyFirst, int i, DbEntity ent)
+        {
+            double parameterOfStart = seg.GetParameterOf(l.StartPoint);
+            double parameterOfEnd = seg.GetParameterOf(l.EndPoint);
+            if (parameterOfStart*parameterOfEnd > 0 || (Math.Abs(parameterOfEnd)<options.Tolerance && parameterOfStart<0) || (Math.Abs(parameterOfStart) < options.Tolerance && parameterOfEnd < 0))
+            {
+                ProcessPolylineAndLine(p, seg, l, bModifyFirst, i, ent);
+                return true;
+            }
+            return false;
+        }
+
+
         protected virtual void ProcessPolylineAndLine(Polyline p, LineSegment3d seg, Line l, bool bModifyStart, int i, DbEntity ent)
         {
             Point3d pt = bModifyStart ? l.EndPoint : l.StartPoint;
@@ -117,7 +141,10 @@ namespace Overkill
                 if (i == 0)
                 {
                     // case b1.1
-                    p.RemoveVertexAt(i);
+                    if (p.NumberOfVertices==2)
+                        DelEntity(new DbEntity(p));
+                    else
+                        p.RemoveVertexAt(i);
                     options.OverlappedCount++;
                 }
                 else if (i != p.NumberOfVertices - 2)
@@ -128,7 +155,10 @@ namespace Overkill
                 else
                 {
                     // case b1.5
-                    p.RemoveVertexAt(i+1);
+                    if (p.NumberOfVertices == 2)
+                        DelEntity(new DbEntity(p));
+                    else
+                        p.RemoveVertexAt(i+1);
                     options.OverlappedCount++;
                 }
             }
@@ -138,9 +168,7 @@ namespace Overkill
                     p.Extend(true, pt);
                 else
                     BreakPolyline2(p, i, pt, false);
-                DelEntity(ent);
-                options.OverlappedCount++;
-
+                DelEntity(ent, false);
             }
             else if (i == p.NumberOfVertices - 2)
             {
@@ -150,9 +178,8 @@ namespace Overkill
                 else
                     BreakPolyline2(p, i, pt, true);
 
-                DelEntity(ent);
-                options.OverlappedCount++;
-                return;
+                DelEntity(ent, false);
+                 return;
             }
             else
             {
@@ -165,6 +192,11 @@ namespace Overkill
         // Разбить полилинию на 2, удалив сегмент i между ними
         private void BreakPolyline(Polyline p, int i, Point3d pt)
         {
+            if (p.NumberOfVertices == 2)
+            {
+                DelEntity(new DbEntity(p), false);
+                return;
+            }
             Polyline pnew = (Polyline)p.Clone();
             bool bLastSeg = i == p.NumberOfVertices - 2;
             for (int j = 0; j < (bLastSeg ? i : i + 1); j++)

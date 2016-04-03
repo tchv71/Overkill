@@ -112,7 +112,7 @@ namespace Overkill
 
         }
 
-        Options _options = new Options();
+        public static Options _options = new Options();
         [CommandMethod("Ovrkill2", CommandFlags.UsePickSet)]
         public void OverkillCmd()
         {

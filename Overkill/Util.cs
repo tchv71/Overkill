@@ -32,8 +32,8 @@ namespace Overkill
                 if (arr1.Length > arr2.Length)
                 {
                     TypedValue[] tmp = arr1;
-                    arr2 = arr1;
-                    arr1 = tmp;
+                    arr1 = arr2;
+                    arr2 = tmp;
                     bDelFirst = false;
                 }
                 for (int i = 0; i < arr2.Length; i++)
@@ -62,7 +62,9 @@ namespace Overkill
                 //if (arr1.Length != arr2.Length)
                 //    return false;
             }
-            for (int index1 = 1, index2=1; index1 < arr1.Length && index2<arr2.Length; index1++, index2++)
+            int index1 = 1;
+            int index2 = 1; 
+            for ( ; index1 < arr1.Length && index2<arr2.Length; index1++, index2++)
             {
                 TypedValue v1 = arr1[index1];
                 TypedValue v2 = arr2[index2];
@@ -94,6 +96,8 @@ namespace Overkill
                 if (str1 != str2)
                     return false;
             }
+            if (index1!=arr1.Length || index2!=arr2.Length)
+                return false;
             if ((!options.IgnoreMaterial && ent1.Material != ent2.Material) ||
                 (!options.IgnoreTransparency && ent1.Transparency != ent2.Transparency))
                 return false;
@@ -117,8 +121,8 @@ namespace Overkill
 
         private static Rectangle GetRect(Point3d p1, Point3d p2)
         {
-            return new Rectangle((float)p1.X, (float)p1.Y, (float)p2.X,
-                (float)p2.Y, (float)p1.Z, (float)p2.Z);
+            return new Rectangle((float)p1.X-(float)Overkill._options.Tolerance, (float)p1.Y - (float)Overkill._options.Tolerance, (float)p2.X + (float)Overkill._options.Tolerance,
+                (float)p2.Y + (float)Overkill._options.Tolerance, (float)p1.Z - (float)Overkill._options.Tolerance, (float)p2.Z + (float)Overkill._options.Tolerance);
         }
 
         public static Rectangle GetRect(Line l1)

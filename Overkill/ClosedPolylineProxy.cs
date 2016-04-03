@@ -13,6 +13,11 @@ namespace Overkill
         protected override void ProcessPolylineAndLine(Polyline p, LineSegment3d seg, Line l, bool bModifyStart, int i,
             DbEntity ent)
         {
+            if (!p.Closed)
+            {
+                base.ProcessPolylineAndLine(p,seg,l,bModifyStart,i,ent);
+                return;
+            }
             Point3d pt = bModifyStart ? l.EndPoint : l.StartPoint;
             bool b1 = seg.GetParameterOf(pt) < 0;
             bool b2 = seg.Direction.Y > -seg.Direction.X;
@@ -118,12 +123,18 @@ namespace Overkill
                 p.AddVertexAt(p.NumberOfVertices, pt[j], 0, widths[j].X, widths[j].Y);
         }
 
-        protected override void ProcessTangentLine(Polyline p, LineSegment3d seg, Line l, int i)
+        protected override void ProcessTangentLine(Polyline p, LineSegment3d seg, Line l, bool bModifyFirst, int i, DbEntity ent)
         {
+            if (!p.Closed)
+            {
+                base.ProcessTangentLine(p,seg,l, bModifyFirst,i, ent);
+                return; 
+            }
             Line3d segLine = seg.GetLine();
             if (segLine.GetClosestPointTo(l.StartPoint).Point.DistanceTo(l.StartPoint) < options.Tolerance &&
                 segLine.GetClosestPointTo(l.EndPoint).Point.DistanceTo(l.EndPoint) < options.Tolerance)
             {
+                if (IsAdjacent(p, seg, l, bModifyFirst, i, ent)) return;
                 if (i < p.NumberOfVertices - 1)
                 {
                     RemoveSegmentAt(p, i);

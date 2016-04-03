@@ -21,7 +21,7 @@ namespace AcadLib {
 			ads_name n;
 			acdbGetAdsName(n, oid);
 			resbuf *buf = ::acdbEntGet(n);
-			return AutoCAD::DatabaseServices::ResultBuffer::Create(IntPtr(buf), true);
+			return AutoCAD::DatabaseServices::ResultBuffer::Create(IntPtr(buf), false);
 		}
 	};
 }

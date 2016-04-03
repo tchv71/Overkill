@@ -91,9 +91,7 @@ namespace Overkill
                 //CheckOption(options.IgnoreTransparency, ref v1, arr1, ref index1, DxfCode.);
                 //CheckOption(options.IgnoreTransparency, ref v2, arr2, ref index2, DxfCode.);
 
-                String str1 = v1.ToString();
-                String str2 = v2.ToString();
-                if (str1 != str2)
+                if (!CompareTypedValue(v1,v2,Overkill._options.Tolerance))
                     return false;
             }
             if (index1!=arr1.Length || index2!=arr2.Length)
@@ -102,6 +100,23 @@ namespace Overkill
                 (!options.IgnoreTransparency && ent1.Transparency != ent2.Transparency))
                 return false;
             return true;
+        }
+
+        private static bool CompareTypedValue(TypedValue v1, TypedValue v2, double tolerance)
+        {
+            if (v1.TypeCode != v2.TypeCode)
+                return false;
+            if (v1.Value is int)
+                return (int) v1.Value == (int)v2.Value;
+            if (v1.Value is short)
+                return (short) v1.Value == (short) v2.Value;
+            if (v1.Value is double)
+                return Math.Abs((double) v1.Value - (double) v2.Value) < tolerance;
+            if (v1.Value is Point3d)
+                return ((Point3d) v1.Value).DistanceTo((Point3d) v2.Value) < tolerance;
+            if (v1.Value is string)
+                return (string) v1.Value == (string) v2.Value;
+            return false;
         }
 
         private static void CheckOption(bool option, ref TypedValue v, TypedValue[] arr, ref int index, DxfCode dxfCode)

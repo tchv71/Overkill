@@ -124,9 +124,11 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>C:\Autodesk\Autodesk_ObjectARX_2017_Win_64_and_32_Bit\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>accore.lib;acad.lib;acdb21.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Autodesk\Autodesk_ObjectARX_2017_Win_64_and_32_Bit\lib-x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

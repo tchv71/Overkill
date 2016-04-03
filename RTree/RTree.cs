@@ -21,10 +21,9 @@
 
 
 using log4net.Repository.Hierarchy;
-using log4net;
 using System.Collections.Generic;
 using System;
-using System.Collections;
+using log4net;
 
 
 namespace RTree
@@ -51,8 +50,8 @@ namespace RTree
     /// <typeparam name="T"></typeparam>
     public class RTree<T>
     {
-        private ILog log = null;
-        private ILog deleteLog = null;
+        private log4net.ILog log = null;
+        private log4net.ILog deleteLog = null;
 
         private const string version = "1.0b2p1";
 

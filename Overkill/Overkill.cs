@@ -127,7 +127,7 @@ namespace Overkill
         }
 
         public static Options _options = new Options();
-        [CommandMethod("Ovrkill2", CommandFlags.UsePickSet)]
+        [CommandMethod("Overkill2", CommandFlags.UsePickSet)]
         public void OverkillCmd()
         {
             Editor ed = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor;

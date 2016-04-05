@@ -25,6 +25,8 @@ namespace Overkill
             ResultBuffer rb2 = AcadLib.ObjectARX._acdbEntGet(new UIntPtr((ulong)ent2.Id.OldIdPtr.ToInt64()));
             TypedValue[] arr1 = rb1.AsArray();
             TypedValue[] arr2 = rb2.AsArray();
+            long h1 = ent1.Handle.Value;
+            long h2 = ent2.Handle.Value;
             bDelFirst = false;
             if (arr1.Length != arr2.Length)
             {
@@ -82,24 +84,36 @@ namespace Overkill
                 CheckOption(options.IgnoreLinetypeScale, ref v2, arr2, ref index2, DxfCode.LinetypeScale);
                 CheckOption(options.IgnoreLineweight, ref v1, arr1, ref index1, DxfCode.LineWeight);
                 CheckOption(options.IgnoreLineweight, ref v2, arr2, ref index2, DxfCode.LineWeight);
-                //CheckOption(options.IgnoreMaterial, ref v1, arr1, ref index1, DxfCode.);
-                //CheckOption(options.IgnoreMaterial, ref v2, arr2, ref index2, DxfCode.);
+                CheckOption(options.IgnoreMaterial, ref v1, arr1, ref index1, (DxfCode)347);
+                CheckOption(options.IgnoreMaterial, ref v2, arr2, ref index2, (DxfCode)347);
                 CheckOption(options.IgnorePlotStyle, ref v1, arr1, ref index1, DxfCode.PlotStyleNameId);
                 CheckOption(options.IgnorePlotStyle, ref v2, arr2, ref index2, DxfCode.PlotStyleNameId);
                 CheckOption(options.IgnoreThickness, ref v1, arr1, ref index1, DxfCode.Thickness);
                 CheckOption(options.IgnoreThickness, ref v2, arr2, ref index2, DxfCode.Thickness);
-                //CheckOption(options.IgnoreTransparency, ref v1, arr1, ref index1, DxfCode.);
-                //CheckOption(options.IgnoreTransparency, ref v2, arr2, ref index2, DxfCode.);
+                CheckOption(options.IgnoreTransparency, ref v1, arr1, ref index1, DxfCode.Alpha);
+                CheckOption(options.IgnoreTransparency, ref v2, arr2, ref index2, DxfCode.Alpha);
 
-                if (!CompareTypedValue(v1,v2,Overkill._options.Tolerance))
+                if (!CompareTypedValue(v1, v2, Overkill._options.Tolerance))
+                {
+                    // В случае линии проверка совпадений начало 1-й - конец 2-й и наоборот
+                    if (v1.TypeCode == 10)
+                    {
+                        TypedValue v = new TypedValue(10, arr2[index2 + 1].Value);
+                        if (!CompareTypedValue(v, v1, Overkill._options.Tolerance))
+                            return false;
+                        v = new TypedValue(10, arr1[index1+1].Value);
+                        if (!CompareTypedValue(v, v2, Overkill._options.Tolerance))
+                            return false;
+                        index1++;
+                        index2++;
+                        continue;
+                    }
                     return false;
+                }
             }
             if (index1!=arr1.Length || index2!=arr2.Length)
                 return false;
-            if ((!options.IgnoreMaterial && ent1.Material != ent2.Material) ||
-                (!options.IgnoreTransparency && ent1.Transparency != ent2.Transparency))
-                return false;
-            return true;
+             return true;
         }
 
         private static bool CompareTypedValue(TypedValue v1, TypedValue v2, double tolerance)

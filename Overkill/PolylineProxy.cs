@@ -134,7 +134,7 @@ namespace Overkill
             Point3d pt = bModifyStart ? l.EndPoint : l.StartPoint;
             bool b1 = seg.GetParameterOf(pt) < 0;
             bool b2 = seg.Direction.Y>-seg.Direction.X;
-            if ((b1&&b2) || (!b1&&!b2))
+            if (!(b1^b2))
             {
                 if (bModifyStart)
                     l.StartPoint = !b1?seg.StartPoint:seg.EndPoint;

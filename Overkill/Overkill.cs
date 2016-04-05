@@ -44,8 +44,11 @@ namespace Overkill
         public class Options
         {
             private const string OVERKILL_KEY =
-                @"SOFTWARE\Autodesk\AutoCAD\R21.0\ACAD-0001:409\Profiles\<<Unnamed Profile>>\Dialogs\Overkill";
+                //@"SOFTWARE\Autodesk\AutoCAD\R21.0\ACAD-0001:409\Profiles\<<Unnamed Profile>>\Dialogs\Overkill";
+                @"\Profiles\<<Unnamed Profile>>\Dialogs\Overkill";
 
+            private const string OVERKILL_KEY_ALT =
+                @"\Profiles\<<Профиль без имени>>\Dialogs\Overkill";
             public int IgnoreOptions;
             public Transaction Tr;
             // Количество удаленных дубликатов
@@ -67,9 +70,20 @@ namespace Overkill
                 bMaintainAssociativities = true;
             }
 
+            private RegistryKey GetRegKey(bool bWritable)
+            {
+                string keyName = HostApplicationServices.Current.UserRegistryProductRootKey;
+                RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName+OVERKILL_KEY, bWritable);
+                if (key == null)
+                {
+                    key = Registry.CurrentUser.OpenSubKey(keyName + OVERKILL_KEY_ALT, bWritable);
+                }
+                return key;
+            }
+
             public void LoadValues()
             {
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(OVERKILL_KEY);
+               RegistryKey key = GetRegKey(false);
 
                 using (key)
                 {
@@ -86,7 +100,7 @@ namespace Overkill
             }
             public void SaveValues()
             {
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(OVERKILL_KEY, true);
+                RegistryKey key = GetRegKey(true);
 
                 using (key)
                 {

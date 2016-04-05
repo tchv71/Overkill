@@ -96,7 +96,7 @@ namespace Overkill
                 if (!CompareTypedValue(v1, v2, Overkill._options.Tolerance))
                 {
                     // В случае линии проверка совпадений начало 1-й - конец 2-й и наоборот
-                    if (v1.TypeCode == 10)
+                    if (ent1 is Line && v1.TypeCode == 10)
                     {
                         TypedValue v = new TypedValue(10, arr2[index2 + 1].Value);
                         if (!CompareTypedValue(v, v1, Overkill._options.Tolerance))

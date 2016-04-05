@@ -219,6 +219,7 @@
             // cbCombineEndToEnd
             // 
             this.cbCombineEndToEnd.AutoSize = true;
+            this.cbCombineEndToEnd.Enabled = false;
             this.cbCombineEndToEnd.Location = new System.Drawing.Point(20, 140);
             this.cbCombineEndToEnd.Name = "cbCombineEndToEnd";
             this.cbCombineEndToEnd.Size = new System.Drawing.Size(356, 21);
@@ -229,6 +230,7 @@
             // cbCombileOverlappings
             // 
             this.cbCombileOverlappings.AutoSize = true;
+            this.cbCombileOverlappings.Enabled = false;
             this.cbCombileOverlappings.Location = new System.Drawing.Point(20, 113);
             this.cbCombileOverlappings.Name = "cbCombileOverlappings";
             this.cbCombileOverlappings.Size = new System.Drawing.Size(325, 21);
@@ -239,6 +241,7 @@
             // cbDontBreakPolylines
             // 
             this.cbDontBreakPolylines.AutoSize = true;
+            this.cbDontBreakPolylines.Enabled = false;
             this.cbDontBreakPolylines.Location = new System.Drawing.Point(35, 86);
             this.cbDontBreakPolylines.Name = "cbDontBreakPolylines";
             this.cbDontBreakPolylines.Size = new System.Drawing.Size(171, 21);
@@ -249,6 +252,7 @@
             // cbIgnorePolylineWidths
             // 
             this.cbIgnorePolylineWidths.AutoSize = true;
+            this.cbIgnorePolylineWidths.Enabled = false;
             this.cbIgnorePolylineWidths.Location = new System.Drawing.Point(35, 59);
             this.cbIgnorePolylineWidths.Name = "cbIgnorePolylineWidths";
             this.cbIgnorePolylineWidths.Size = new System.Drawing.Size(230, 21);
@@ -259,11 +263,12 @@
             // cbOptimizePolylines
             // 
             this.cbOptimizePolylines.AutoSize = true;
+            this.cbOptimizePolylines.Enabled = false;
             this.cbOptimizePolylines.Location = new System.Drawing.Point(20, 32);
             this.cbOptimizePolylines.Name = "cbOptimizePolylines";
-            this.cbOptimizePolylines.Size = new System.Drawing.Size(240, 21);
+            this.cbOptimizePolylines.Size = new System.Drawing.Size(248, 21);
             this.cbOptimizePolylines.TabIndex = 0;
-            this.cbOptimizePolylines.Text = "Optimize segments witin &polylines";
+            this.cbOptimizePolylines.Text = "Optimize segments within &polylines";
             this.cbOptimizePolylines.UseVisualStyleBackColor = true;
             // 
             // btnOk

@@ -40,7 +40,7 @@ namespace Overkill
         {
             try
             {
-                double val = double.Parse(tbTolerance.Text);
+                double val = double.Parse(tbTolerance.Text.Replace(".",","));
                 if (val < 0) throw new Exception();
                 _options.Tolerance = val;
                 _options.StrTolerance = tbTolerance.Text;

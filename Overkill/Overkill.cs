@@ -146,7 +146,14 @@ namespace Overkill
                             return;
                     }
                     FillRTree(res, tr);
-                    ProcessObjects(res, tr);
+                    int nOverlapped;
+                    int nDublicates;
+                    do
+                    {
+                        nOverlapped = _options.OverlappedCount;
+                        nDublicates = _options.DupCount;
+                        ProcessObjects(res, tr);
+                    } while (_options.OverlappedCount != nOverlapped || _options.DupCount != nDublicates); 
                     tr.Commit();
                 }
 

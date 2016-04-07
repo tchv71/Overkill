@@ -188,7 +188,16 @@ namespace Overkill
             _options.Tr = tr;
             foreach (var id in res.Value.GetObjectIds())
             {
-                Entity obj = tr.GetObject(id, OpenMode.ForWrite) as Entity;
+                Entity obj;
+                try
+                {
+                     obj = tr.GetObject(id, OpenMode.ForWrite) as Entity;
+
+                }
+                catch (Exception ex)
+                {
+                     continue;
+                }
                 if (obj.IsErased)
                     continue;
                 IEntityProxy proxy = Util.MakeProxy(obj, _options, _tree);

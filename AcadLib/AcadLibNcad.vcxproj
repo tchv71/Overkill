@@ -227,9 +227,6 @@
     <Image Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Overkill\Overkill.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="hostdbmgd, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\..\..\..\..\..\Program Files\Nanosoft\nanoCAD x64 Plus 7.0\bin\hostdbmgd.dll</HintPath>
     </Reference>

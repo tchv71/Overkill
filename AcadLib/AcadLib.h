@@ -22,8 +22,14 @@ namespace AcadLib {
 			oid.setFromOldId(Adesk::UIntPtr(name));
 			ads_name n;
 			acdbGetAdsName(n, oid);
+#ifdef NCAD
+			OdResBufPtr resbufptr = oddbEntGet(oid);
+		
+			return ResultBuffer::Create(System::IntPtr(resbufptr.get()), true);
+#else
 			resbuf *buf = ::acdbEntGet(n);
 			return ResultBuffer::Create(System::IntPtr(buf), true);
+#endif
 		}
 	};
 }

@@ -47,7 +47,7 @@ namespace Overkill
             {
                 if (b1)
                 {
-                    p.AddVertexAt(p.NumberOfVertices, p.GetPoint2dAt(0), 0, p.GetEndWidthAt(p.NumberOfVertices-1), p.GetEndWidthAt(p.NumberOfVertices) );
+                    p.AddVertexAt(p.NumberOfVertices, p.GetPoint2dAt(0), 0, p.GetStartWidthAt(p.NumberOfVertices-1), p.GetEndWidthAt(p.NumberOfVertices-1) );
                     p.Closed = false;
                     p.Extend(true,pt);
                     DelEntity(ent, false);
@@ -76,7 +76,13 @@ namespace Overkill
             {
                 if (!b1)
                 {
+#if NCAD
+                    Point2d ptLast = p.GetPoint2dAt(p.NumberOfVertices - 1);
+                    p.AddVertexAt(p.NumberOfVertices - 1, ptLast, 0, p.GetStartWidthAt(p.NumberOfVertices - 1), p.GetEndWidthAt(p.NumberOfVertices-1));
+                    p.SetPointAt(p.NumberOfVertices - 1, p.GetPoint2dAt(0));
+#else
                     p.AddVertexAt(p.NumberOfVertices, p.GetPoint2dAt(0), 0, p.GetEndWidthAt(p.NumberOfVertices - 1), p.GetEndWidthAt(p.NumberOfVertices));
+#endif
                     p.Closed = false;
                     p.Extend(false, pt);
                     DelEntity(ent, false);

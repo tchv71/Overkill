@@ -1,27 +1,42 @@
-﻿using Autodesk.AutoCAD.DatabaseServices;
-//using Autodesk.AutoCAD.ApplicationServices;
+﻿#if NCAD
+    using Teigha.DatabaseServices;
+    using Teigha.Runtime;
+    using HostMgd.ApplicationServices;
+    using HostMgd.EditorInput;
+    using Application = HostMgd.ApplicationServices.Application;
+    using Platform = HostMgd;
+    using PlatformDb = Teigha;
+#else
+using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.EditorInput;
 using Autodesk.AutoCAD.Runtime;
-using RTree;
-using System.Diagnostics;
-using System.Windows.Forms;
-using Microsoft.Win32;
-using Registry = Microsoft.Win32.Registry;
-using RegistryKey = Microsoft.Win32.RegistryKey;
+using Platform = Autodesk.AutoCAD;
+using PlatformDb = Autodesk.AutoCAD;
+#endif
 
+#if NCAD
+#else 
 [assembly: ExtensionApplication(null)]
 [assembly: CommandClass(typeof(Overkill.Overkill))]
+#endif
 
 namespace Overkill
 {
+    using RTree;
+    using System.Diagnostics;
+    using System.Windows.Forms;
+    using Microsoft.Win32;
+    using Registry = Microsoft.Win32.Registry;
+    using RegistryKey = Microsoft.Win32.RegistryKey;
     public class DbEntity
     {
+        private DBObject _ptr;
         public DbEntity(DBObject ptr)
         {
-            Ptr = ptr;
+            _ptr = ptr;
         }
 
-        public DBObject Ptr { get; }
+        public DBObject Ptr { get { return _ptr; } }
        
     }
 
@@ -45,8 +60,11 @@ namespace Overkill
         {
             private const string OVERKILL_KEY =
                 //@"SOFTWARE\Autodesk\AutoCAD\R21.0\ACAD-0001:409\Profiles\<<Unnamed Profile>>\Dialogs\Overkill";
+#if NCAD
+                @"\Profile\Dialogs\Overkill";
+#else
                 @"\Profiles\<<Unnamed Profile>>\Dialogs\Overkill";
-
+#endif
             private const string OVERKILL_KEY_ALT =
                 @"\Profiles\<<Профиль без имени>>\Dialogs\Overkill";
             public int IgnoreOptions;
@@ -72,7 +90,11 @@ namespace Overkill
 
             private RegistryKey GetRegKey(bool bWritable)
             {
+#if NCAD
+                string keyName = HostApplicationServices.Current.RegistryProductRootKey;
+#else
                 string keyName = HostApplicationServices.Current.UserRegistryProductRootKey;
+#endif
                 RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName+OVERKILL_KEY, bWritable);
                 if (key == null)
                 {
@@ -114,34 +136,33 @@ namespace Overkill
                     key.SetValue("Tolerance", StrTolerance,RegistryValueKind.String);
                 }
             }
-            public bool IgnoreColor => (IgnoreOptions & (int)EOptions.EIgnoreColor) !=0;
-            public bool IgnoreLayer => (IgnoreOptions & (int) EOptions.EIgnoreLayer) != 0;
-            public bool IgnoreLinetype => (IgnoreOptions & (int)EOptions.EIgnoreLinetype) != 0;
-            public bool IgnoreLinetypeScale => (IgnoreOptions & (int)EOptions.EIgnoreLinetypeScale) != 0;
-            public bool IgnoreLineweight => (IgnoreOptions & (int)EOptions.EIgnoreLineweight) != 0;
-            public bool IgnoreMaterial => (IgnoreOptions & (int)EOptions.EIgnoreMaterial) != 0;
-            public bool IgnorePlotStyle => (IgnoreOptions & (int)EOptions.EIgnorePlotStyle) != 0;
-            public bool IgnoreThickness => (IgnoreOptions & (int)EOptions.EIgnoreThickness) != 0;
-            public bool IgnoreTransparency => (IgnoreOptions & (int)EOptions.EIgnoreTransparency) != 0;
+            public bool IgnoreColor   {get { return (IgnoreOptions & (int)EOptions.EIgnoreColor) !=0;}}
+            public bool IgnoreLayer   {get { return (IgnoreOptions & (int) EOptions.EIgnoreLayer) != 0;}}
+            public bool IgnoreLinetype  {get { return (IgnoreOptions & (int)EOptions.EIgnoreLinetype) != 0;}}
+            public bool IgnoreLinetypeScale   {get { return  (IgnoreOptions & (int)EOptions.EIgnoreLinetypeScale) != 0;}}
+            public bool IgnoreLineweight   {get { return  (IgnoreOptions & (int)EOptions.EIgnoreLineweight) != 0;}}
+            public bool IgnoreMaterial   {get { return  (IgnoreOptions & (int)EOptions.EIgnoreMaterial) != 0;}}
+            public bool IgnorePlotStyle   {get { return  (IgnoreOptions & (int)EOptions.EIgnorePlotStyle) != 0;}}
+            public bool IgnoreThickness { get { return (IgnoreOptions & (int)EOptions.EIgnoreThickness) != 0; } }
+            public bool IgnoreTransparency   {get { return  (IgnoreOptions & (int)EOptions.EIgnoreTransparency) != 0;}}
 
         }
 
         public static Options _options = new Options();
-        [CommandMethod("Overkill2", CommandFlags.UsePickSet)]
+        [CommandMethod("OVERKILL2", CommandFlags.UsePickSet)]
         public void OverkillCmd()
         {
-            Editor ed = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor;
+            Editor ed = Platform.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Editor;
             PromptSelectionResult res = ed.GetSelection();
             if (res.Status == PromptStatus.OK)
             {
-                Database db =
-                    Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Database;
-                TransactionManager tm = db.TransactionManager;
+                Database db = Platform.ApplicationServices.Application.DocumentManager.MdiActiveDocument.Database;
+                PlatformDb.DatabaseServices.TransactionManager tm = db.TransactionManager;
                 using (Transaction tr = tm.StartTransaction())
                 {
                     using (OverkillForm frm = new OverkillForm(_options))
                     {
-                        DialogResult dlgResult = Autodesk.AutoCAD.ApplicationServices.Application.ShowModalDialog(frm);
+                        DialogResult dlgResult = Platform.ApplicationServices.Application.ShowModalDialog(frm);
                         if (dlgResult == DialogResult.Cancel)
                             return;
                     }
@@ -157,8 +178,8 @@ namespace Overkill
                     tr.Commit();
                 }
 
-                ed.WriteMessage($"{_options.DupCount} duplicate(s) deleted\n");
-                ed.WriteMessage($"{_options.OverlappedCount} overlapping object(s) or segment(s) deleted\n");
+                ed.WriteMessage("{0} duplicate(s) deleted\n", _options.DupCount);
+                ed.WriteMessage("{0} overlapping object(s) or segment(s) deleted\n", _options.OverlappedCount);
             }
         }
 

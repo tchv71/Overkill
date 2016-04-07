@@ -1,6 +1,11 @@
 ﻿using System;
+#if NCAD
+using Teigha.DatabaseServices;
+using Teigha.Geometry;
+#else
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
+#endif
 using RTree;
 
 namespace Overkill

@@ -3,10 +3,12 @@
 #pragma once
 #include "dbents.h"
 
-
 using namespace System;
-using namespace Autodesk;
-
+#ifdef NCAD
+using namespace Teigha::DatabaseServices;
+#else
+using namespace Autodesk::AutoCAD::DatabaseServices;
+#endif
 
 namespace AcadLib {
 
@@ -14,14 +16,14 @@ namespace AcadLib {
 	{
 	public:
 
-		static AutoCAD::DatabaseServices::ResultBuffer^ _acdbEntGet(UIntPtr name)
+		static ResultBuffer^ _acdbEntGet(UIntPtr name)
 		{
 			AcDbObjectId oid;
 			oid.setFromOldId(Adesk::UIntPtr(name));
 			ads_name n;
 			acdbGetAdsName(n, oid);
 			resbuf *buf = ::acdbEntGet(n);
-			return AutoCAD::DatabaseServices::ResultBuffer::Create(IntPtr(buf), false);
+			return ResultBuffer::Create(System::IntPtr(buf), true);
 		}
 	};
 }

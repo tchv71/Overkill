@@ -1,5 +1,14 @@
 ﻿using System.Diagnostics;
-using Autodesk.AutoCAD.DatabaseServices;
+#if NCAD
+    using Teigha.DatabaseServices;
+    using Teigha.Runtime;
+    using Platform = HostMgd;
+    using PlatformDb = Teigha;
+#else
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Platform = Autodesk.AutoCAD;
+    using PlatformDb = Autodesk.AutoCAD;
+# endif
 using RTree;
 
 namespace Overkill
@@ -44,10 +53,10 @@ namespace Overkill
                         try
                         {
                             Debug.Assert(l1 != null, "l1 != null");
-                            l1.JoinEntity(l2);
+                            //l1.JoinEntity(l2);
                             options.OverlappedCount++;
                         }
-                        catch (Autodesk.AutoCAD.Runtime.Exception)
+                        catch (PlatformDb.Runtime.Exception)
                         {
                         }
                     }

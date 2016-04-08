@@ -37,6 +37,9 @@ namespace Overkill
                     // Если с линией что-то ассоциировано, не удалять ее
                     if (list2.Count != 0 && options.bMaintainAssociativities)
                         continue;
+                    ObjectIdCollection list1 = l1.GetPersistentReactorIds();
+                    if (list1.Count != 0 && options.bMaintainAssociativities)
+                        continue;
 
                     bool bDelFirst;
                     if (Util.IsEqual(l1, l2, options, out bDelFirst))
@@ -72,6 +75,17 @@ namespace Overkill
         /// <param name="startPointLiesOnLine"></param>
         private void JoinLines(Line l1, Line l2, DbEntity ent, bool startPointLiesOnLine)
         {
+            if (l2.GetPersistentReactorIds().Count > 0)
+            {
+                Line3d l3D2 = new Line3d(l2.StartPoint, l2.EndPoint);
+                Point3d pt2 = Util.IsPointLiesOnLine(l2, l1.StartPoint,options.Tolerance) ? l1.EndPoint : l1.StartPoint;
+                if (l3D2.GetClosestPointTo(pt2).Parameter < 0)
+                    l2.StartPoint = pt2;
+                else
+                    l2.EndPoint = pt2;
+                DelEntity(new DbEntity(l1), false);
+                return;
+            }
             Line3d l = new Line3d(l1.StartPoint, l1.EndPoint);
             Point3d pt = startPointLiesOnLine ? l2.EndPoint : l2.StartPoint;
             if (l.GetClosestPointTo(pt).Parameter < 0)

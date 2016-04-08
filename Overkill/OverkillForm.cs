@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace Overkill
@@ -40,7 +41,7 @@ namespace Overkill
         {
             try
             {
-                double val = double.Parse(tbTolerance.Text.Replace(".",","));
+                double val = double.Parse(tbTolerance.Text,CultureInfo.CurrentCulture);
                 if (val < 0) throw new Exception();
                 _options.Tolerance = val;
                 _options.StrTolerance = tbTolerance.Text;

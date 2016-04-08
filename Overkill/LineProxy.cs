@@ -7,9 +7,10 @@ using Teigha.Runtime;
 using Platform = HostMgd;
 using PlatformDb = Teigha;
 #else
-    using Autodesk.AutoCAD.DatabaseServices;
-    using Platform = Autodesk.AutoCAD;
-    using PlatformDb = Autodesk.AutoCAD;
+using Autodesk.AutoCAD.Geometry;
+using Autodesk.AutoCAD.DatabaseServices;
+using Platform = Autodesk.AutoCAD;
+using PlatformDb = Autodesk.AutoCAD;
 # endif
 using RTree;
 

@@ -41,7 +41,7 @@ namespace Overkill
         {
             try
             {
-                double val = double.Parse(tbTolerance.Text,CultureInfo.CurrentCulture);
+                double val = double.Parse(tbTolerance.Text,CultureInfo.InvariantCulture);
                 if (val < 0) throw new Exception();
                 _options.Tolerance = val;
                 _options.StrTolerance = tbTolerance.Text;

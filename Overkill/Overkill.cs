@@ -186,17 +186,19 @@ namespace Overkill
         private void ProcessObjects(PromptSelectionResult res, Transaction tr)
         {
             _options.Tr = tr;
-            foreach (var id in res.Value.GetObjectIds())
+            var ObjIdsArr = res.Value.GetObjectIds();
+            for (int i = 0; i < ObjIdsArr.Length; i++ )
             {
+                var id = ObjIdsArr[i];
                 Entity obj;
                 try
                 {
-                     obj = tr.GetObject(id, OpenMode.ForWrite) as Entity;
+                    obj = tr.GetObject(id, OpenMode.ForWrite) as Entity;
 
                 }
                 catch (Exception ex)
                 {
-                     continue;
+                    continue;
                 }
                 if (obj.IsErased)
                     continue;

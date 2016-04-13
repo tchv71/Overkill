@@ -95,10 +95,24 @@ namespace Overkill
 #else
                 string keyName = HostApplicationServices.Current.UserRegistryProductRootKey;
 #endif
-                RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName+OVERKILL_KEY, bWritable);
+                string keyNameFull = keyName + OVERKILL_KEY;
+                RegistryKey key = Registry.CurrentUser.OpenSubKey(keyNameFull, bWritable);
                 if (key == null)
                 {
-                    key = Registry.CurrentUser.OpenSubKey(keyName + OVERKILL_KEY_ALT, bWritable);
+                    keyNameFull = keyName + OVERKILL_KEY_ALT;
+                    key = Registry.CurrentUser.OpenSubKey(keyNameFull, bWritable);
+                }
+                if (key==null)
+                {
+                    string[] subKeys = keyNameFull.Split(new char[] { '\\' });
+                    RegistryKey currKey = Registry.CurrentUser;
+                    foreach (string strSubKey in subKeys)
+                    {
+                        currKey = currKey.CreateSubKey(strSubKey);
+                        if (currKey == null)
+                            break;
+                    }
+                    key = currKey;
                 }
                 return key;
             }
@@ -109,14 +123,14 @@ namespace Overkill
 
                 using (key)
                 {
-                    IgnoreOptions = (int)key.GetValue("Ignore");
-                    bCombineEndToEnd = (int) key.GetValue("CombineEndToEnd") != 0;
-                    bCombinePartialOverlaps = (int) key.GetValue("CombinePartialOverlaps") != 0;
-                    bIgnorePolylineWidths = (int) key.GetValue("IgnorePolylineWidths") != 0;
-                    bMaintainAssociativities = (int) key.GetValue("MaintainAssociativities") != 0;
-                    bMaintainPolylines = (int) key.GetValue("MaintainPolylines") != 0;
-                    bOptimizePolylines = (int) key.GetValue("OptimizePolylines") != 0;
-                    StrTolerance = (string) key.GetValue("Tolerance");
+                    IgnoreOptions = (int)key.GetValue("Ignore", 0);
+                    bCombineEndToEnd = (int) key.GetValue("CombineEndToEnd",1) != 0;
+                    bCombinePartialOverlaps = (int) key.GetValue("CombinePartialOverlaps",1) != 0;
+                    bIgnorePolylineWidths = (int) key.GetValue("IgnorePolylineWidths",0) != 0;
+                    bMaintainAssociativities = (int) key.GetValue("MaintainAssociativities",0) != 0;
+                    bMaintainPolylines = (int) key.GetValue("MaintainPolylines",0) != 0;
+                    bOptimizePolylines = (int) key.GetValue("OptimizePolylines",1) != 0;
+                    StrTolerance = (string) key.GetValue("Tolerance","0.000001");
                     //Tolerance = Double.Parse(_strTolerance.Replace(".", ","));
                 }
             }

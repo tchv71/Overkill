@@ -190,6 +190,7 @@ namespace Overkill
                         ProcessObjects(res, tr);
                     } while (_options.OverlappedCount != nOverlapped || _options.DupCount != nDublicates); 
                     tr.Commit();
+                    _tree = null;
                 }
 
                 ed.WriteMessage("{0} duplicate(s) deleted\n", _options.DupCount);

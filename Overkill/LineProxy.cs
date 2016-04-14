@@ -1,9 +1,7 @@
 ﻿using System.Diagnostics;
-using System;
 #if NCAD
 using Teigha.DatabaseServices;
 using Teigha.Geometry;
-using Teigha.Runtime;
 using Platform = HostMgd;
 using PlatformDb = Teigha;
 #else

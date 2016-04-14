@@ -1,9 +1,7 @@
 ﻿#if NCAD
     using Teigha.DatabaseServices;
     using Teigha.Runtime;
-    using HostMgd.ApplicationServices;
     using HostMgd.EditorInput;
-    using Application = HostMgd.ApplicationServices.Application;
     using Platform = HostMgd;
     using PlatformDb = Teigha;
 #else
@@ -211,7 +209,7 @@ namespace Overkill
                     obj = tr.GetObject(id, OpenMode.ForWrite) as Entity;
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     continue;
                 }

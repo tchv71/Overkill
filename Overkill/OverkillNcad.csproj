@@ -68,7 +68,8 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F};{3B476D35-A401-11D2-AAD4-00C04F990171}</DebugEngines>  </PropertyGroup>
+    <DebugEngines>{351668CC-8477-4fbf-BFE3-5F1006E4DB1F};{3B476D35-A401-11D2-AAD4-00C04F990171}</DebugEngines>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AcadLib">
       <HintPath>..\x64\DebugNcad\AcadLib.dll</HintPath>
@@ -80,10 +81,6 @@
     <Reference Include="hostmgd">
       <HintPath>..\..\..\..\..\..\Program Files\Nanosoft\nanoCAD x64 Plus 7.0\bin\hostmgd.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="RTree">
-      <HintPath>\\Mac\Home\Downloads\RTree\bin\x64\Debug\RTree.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -109,7 +106,12 @@
       <DependentUpon>OverkillForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\RTree\RTree.csproj">
+      <Project>{4085ba67-60d7-4679-886e-457aaf37ec7b}</Project>
+      <Name>RTree</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <None Include="Dwg\Data Extraction and Multileaders Sample1.dwg" />
     <None Include="Dwg\Overkill2.dwg" />

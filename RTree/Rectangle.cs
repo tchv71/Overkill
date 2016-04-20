@@ -348,7 +348,7 @@ namespace RTree
             return union;
         }
 
-        internal bool CompareArrays(float[] a1, float[] a2)
+        internal static bool CompareArrays(float[] a1, float[] a2)
         {
             if ((a1 == null) || (a2 == null))
                 return false;

@@ -25,6 +25,10 @@ using System.Collections.Generic;
 using System;
 using log4net;
 
+// Configure logging for this assembly 
+[assembly: log4net.Config.XmlConfigurator(ConfigFileExtension = "log4net", Watch = true)]
+
+
 
 namespace RTree
 {

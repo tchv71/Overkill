@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- This section contains the log4net configuration settings -->
+<log4net>
+
+  <!-- Define some output appenders -->
+  <appender name="LogFileAppender" type="log4net.Appender.FileAppender">
+    <file value="c:\Logs\RTree.log"/>
+    <!-- Example using environment variables in params -->
+    <!-- <file value="${TMP}\log-file.txt" /> -->
+    <appendToFile value="true"/>
+    <!-- An alternate output encoding can be specified -->
+    <!-- <encoding value="unicodeFFFE" /> -->
+    <layout type="log4net.Layout.PatternLayout">
+      <header value="[Header]
+"/>
+      <footer value="[Footer]
+"/>
+      <conversionPattern value="%date [%thread] %-5level %logger [%ndc] &lt;%property{auth}&gt; - %message%newline"/>
+    </layout>
+    <!-- Alternate layout using XML			
+			<layout type="log4net.Layout.XMLLayout" /> -->
+  </appender>
+
+  <!-- Setup the root category, add the appenders and set the default priority -->
+
+  <root>
+    <level value="ALL" />
+    <appender-ref ref="LogFileAppender" />
+  </root>
+
+</log4net>
